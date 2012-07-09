@@ -5,6 +5,11 @@ from re import sub
 
 import env
 import requests
+import phonenumbers
+from phonenumbers.geocoder import description_for_number
+from phonenumbers.geocoder import area_description_for_number
+
+
 
 creds = env.prefix('opencnam_')
 session = requests.session()
@@ -25,3 +30,12 @@ def phone(number):
     r = session.get(url, params=params)
 
     return r.json or {}, r.status_code
+
+
+def area_description(number):
+    n = phonenumbers.parse(number, 'US')
+    return area_description_for_number(n, 'en', region='US')
+
+def description(number):
+    n = phonenumbers.parse(number, 'US')
+    return description_for_number(n, 'en', region='US')
