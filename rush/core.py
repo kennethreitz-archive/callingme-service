@@ -6,6 +6,8 @@ from flask_sslify import SSLify
 from raven.contrib.flask import Sentry
 from flask.ext.celery import Celery
 
+from .data import table
+
 app = Flask(__name__)
 
 heroku = Heroku(app)
@@ -19,3 +21,5 @@ app.debug = True
 def describe_api():
     """Returns a description of the API."""
     return 'yay!'
+
+@app.route('/numbers/<number>')
