@@ -1,0 +1,10 @@
+Flask==0.9
+Flask-SSLify==0.1.3
+Flask-Script==0.3.3
+Jinja2==2.6
+Werkzeug==0.8.3
+argparse==1.2.1
+boto==2.5.2
+distribute==0.6.27
+dynamo==0.1.0
+wsgiref==0.1.2
