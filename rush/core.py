@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-
 from flask import Flask
 from flask_heroku import Heroku
 from flask_sslify import SSLify
 from raven.contrib.flask import Sentry
+from flask.ext.celery import Celery
 
 app = Flask(__name__)
 
 heroku = Heroku(app)
 sentry = Sentry(app)
 sslify = SSLify(app)
+celery = Celery(app)
 
 app.debug = True
 
