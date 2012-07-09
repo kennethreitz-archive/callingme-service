@@ -37,8 +37,9 @@ def update_number(number):
     namespace = 'numbers:{0}'.format(number)
 
     p = phone(number)
-    table[namespace]['number'] = p.number or None
-    table[namespace]['cnam'] = p.cnam or None
+    table[namespace]['number'] = p.number
+    table[namespace]['cnam'] = p.cnam or False
+    table[namespace]['success'] = True
 
 
 
@@ -51,13 +52,17 @@ def number_info(number):
 
     namespace = 'numbers:{0}'.format(number)
     t = table[namespace]
-    if (not t.get('cnam')) or 'force' in request.args:
+    if (not t.get('success')) or 'force' in request.args:
         t = update_number(number)
         return redirect(url_for('number_info', number=number))
 
     else:
 
-        return jsonify(t)
+        data = {
+            'number': t['number'],
+            'cnam': t['cnam'] or None
+        }
+        return jsonify(number=data)
 
 
 def area_code():
