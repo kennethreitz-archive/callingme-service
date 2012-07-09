@@ -50,13 +50,13 @@ def number_info(number):
         return 'Invalid length.', 400
 
     namespace = 'numbers:{0}'.format(number)
-
-    if (namespace not in table) or 'force' in request.args:
+    t = table[namespace]
+    if (not t.get('cnam')) or 'force' in request.args:
         t = update_number(number)
         return redirect(url_for('number_info', number=number))
 
     else:
-        t = table[namespace]
+
         return jsonify(t)
 
 
