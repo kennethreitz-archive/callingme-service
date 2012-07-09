@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, Response, redirect, url_for
 
 from flask_heroku import Heroku
 from flask_sslify import SSLify
@@ -8,6 +8,7 @@ from raven.contrib.flask import Sentry
 from flask.ext.celery import Celery
 
 from .data import table
+from .cnam import phone
 
 app = Flask(__name__)
 
@@ -32,9 +33,31 @@ def describe_api():
     }
     return jsonify(descr)
 
+def update_number(number):
+    namespace = 'numbers:{0}'.format(number)
+
+    p = phone(number)
+    table[namespace]['number'] = p.number or None
+    table[namespace]['cnam'] = p.cnam or None
+
+
+
 @app.route('/numbers/<number>')
-def function():
-    pass
+def number_info(number):
+
+    # Sanity check.
+    if len(number) != 10:
+        return 'Invalid length.', 400
+
+    namespace = 'numbers:{0}'.format(number)
+
+    if (namespace not in table) or 'force' in request.args:
+        t = update_number(number)
+        return redirect(url_for('number_info', number=number))
+
+    else:
+        t = table[namespace]
+        return jsonify(t)
 
 
 def area_code():
@@ -43,5 +66,11 @@ def area_code():
 def area_exchange():
     pass
 
+@app.route('/normalize')
 def normalize_number():
-    pass
+    p = phone(request.args.get('number'))
+
+    if p:
+        return redirect(url_for('number_info', number=p.number))
+    else:
+        return '', 404
