@@ -19,10 +19,9 @@ gevent==0.13.7
 greenlet==0.4.0
 gunicorn==0.14.5
 kombu==2.2.4
-opencnam==0.2
+opencnam==0.3
 python-dateutil==1.5
 raven==2.0.0
 requests==0.13.2
 simplejson==2.4.0
-slumber==0.4.2
 wsgiref==0.1.2
