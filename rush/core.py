@@ -8,7 +8,7 @@ from raven.contrib.flask import Sentry
 from flask.ext.celery import Celery
 
 from .data import table
-from .cnam import phone
+from .cnam import phone, clean
 
 app = Flask(__name__)
 
@@ -33,13 +33,15 @@ def describe_api():
     }
     return jsonify(descr)
 
+
 def update_number(number):
     namespace = 'numbers:{0}'.format(number)
 
-    p = phone(number)
-    table[namespace]['number'] = p.number
-    table[namespace]['cnam'] = p.cnam or False
-    table[namespace]['success'] = True
+    p, status = phone(number)
+    if status == 200:
+        table[namespace]['number'] = p['number']
+        table[namespace]['cnam'] = p['cnam']
+        table[namespace]['success'] = True
 
 
 
@@ -54,7 +56,12 @@ def number_info(number):
     t = table[namespace]
     if (not t.get('success')) or 'force' in request.args:
         t = update_number(number)
-        return redirect(url_for('number_info', number=number))
+        j, s = phone(number)
+        j['number'] = number
+        j['success'] = False
+        j['cnam'] = None
+        return jsonify(number=j), s
+        # return redirect(url_for('number_info', number=number))
 
     else:
 
@@ -73,9 +80,9 @@ def area_exchange():
 
 @app.route('/normalize')
 def normalize_number():
-    p = phone(request.args.get('number'))
+    number = clean(request.args.get('number'))
 
-    if p:
-        return redirect(url_for('number_info', number=p.number))
+    if number:
+        return redirect(url_for('number_info', number=number))
     else:
         return '', 404
